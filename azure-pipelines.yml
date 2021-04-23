@@ -33,8 +33,9 @@ steps:
   inputs:
     command: 'pack'
     nobuild: true
-    packagesToPack: 'WordsToNumbers\WordsToNumbers.csproj'
-    arguments: '-p:PackageVersion=$(GitVersion.NuGetPackageVersion)'
+    versioningScheme: byEnvVar
+    versionEnvVar: GITVERSION.NUGETVERSION
+    verbosityPack: normal
 
 - task: PublishBuildArtifacts@1
   displayName: Publish artifacts
