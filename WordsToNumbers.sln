@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordsToNumbers", "WordsToNumbers\WordsToNumbers.csproj", "{00068041-7F4F-4011-AD3A-864A8E250462}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordsToNumbers.Tests", "WordsToNumbers.Tests\WordsToNumbers.Tests.csproj", "{FB6F3386-60CE-4CB6-95D2-C0E907329E12}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Items", "Project Items", "{E53555D5-A7B0-4E02-B5DE-8BE53CE2EF4A}"
+	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{00068041-7F4F-4011-AD3A-864A8E250462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00068041-7F4F-4011-AD3A-864A8E250462}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00068041-7F4F-4011-AD3A-864A8E250462}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00068041-7F4F-4011-AD3A-864A8E250462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB6F3386-60CE-4CB6-95D2-C0E907329E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB6F3386-60CE-4CB6-95D2-C0E907329E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB6F3386-60CE-4CB6-95D2-C0E907329E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB6F3386-60CE-4CB6-95D2-C0E907329E12}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8B6BD900-072D-4BED-99ED-C7FAC8D3C514}
+	EndGlobalSection
+EndGlobal
