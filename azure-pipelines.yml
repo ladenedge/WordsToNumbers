@@ -21,7 +21,7 @@ steps:
   displayName: dotnet build
   inputs:
     command: 'build'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration $(buildConfiguration) -p:ContinuousIntegrationBuild=true'
 
 - task: DotNetCoreCLI@2
   displayName: dotnet test
@@ -32,7 +32,9 @@ steps:
   displayName: dotnet pack
   inputs:
     command: 'pack'
-    arguments: '-p:ContinuousIntegrationBuild=true -p:PackageVersion=$(NuGetPackageVersion) -p:PackageOutputPath=$(Build.ArtifactStagingDirectory)'
+    nobuild: true
+    packagesToPack: 'WordsToNumbers\WordsToNumbers.csproj'
+    arguments: '-p:PackageVersion=$(GitVersion.NuGetPackageVersion)'
 
 - task: PublishBuildArtifacts@1
   displayName: Publish artifacts
