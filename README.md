@@ -3,6 +3,8 @@ A .NET library for converting numeric words into numbers.
 
 ## Installation
 
+[![NuGet Badge](https://buildstats.info/nuget/WordsToNumbers)](https://www.nuget.org/packages/WordsToNumbers/)
+
 New versions of the library are published to NuGet.
 
 ```
