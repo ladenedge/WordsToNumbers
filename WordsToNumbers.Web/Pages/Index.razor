@@ -1,0 +1,35 @@
+﻿@page "/"
+@inject IWordToNumberStrategy Translator
+
+<EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Input words:</label>
+            <InputText id="words" class="form-control" @bind-Value="Model.Words" />
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Output string:</label>
+            <InputText id="numbers" class="form-control" readonly @bind-Value="Model.Numbers" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Translate</button>
+</EditForm>
+
+
+
+
+@code {
+    private WordsAndNumbers Model = new();
+
+    private void HandleValidSubmit()
+    {
+        Model.Numbers = Translator.ConvertWordsToNumbers(Model.Words);
+    }
+}
