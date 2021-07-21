@@ -18,6 +18,10 @@ jobs:
     - name: Publish .NET Project
       run: dotnet publish WordsToNumbers.Web/WordsToNumbers.Web.csproj -c Release -o release --nologo
     
+    # changes the base-tag in index.html from '/' to match GitHub Pages repository subdirectory
+    - name: Change base-tag in index.html from / to WordsToNumbers.Web
+      run: sed -i 's/<base href="\/" \/>/<base href="\/WordsToNumbers.Web\/" \/>/g' release/wwwroot/index.html
+
     - name: Commit wwwroot to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@3.7.1
       with:

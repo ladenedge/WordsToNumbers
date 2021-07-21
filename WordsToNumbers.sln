@@ -10,10 +10,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Items", "Project Items", "{E53555D5-A7B0-4E02-B5DE-8BE53CE2EF4A}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
+		.github\workflows\github-workflow.yml = .github\workflows\github-workflow.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordsToNumbers.Web", "WordsToNumbers.Web\WordsToNumbers.Web.csproj", "{9C0EBD90-D315-4FB8-81AA-6AB53481FF71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordsToNumbers.Web", "WordsToNumbers.Web\WordsToNumbers.Web.csproj", "{9C0EBD90-D315-4FB8-81AA-6AB53481FF71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
