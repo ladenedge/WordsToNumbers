@@ -1,5 +1,7 @@
-# WordsToNumbers
+﻿# WordsToNumbers
 A .NET library for converting numeric words into numbers.
+
+Try it out on the 🔗 [demo site](https://ladenedge.github.io/WordsToNumbers/).
 
 ## Installation
 
