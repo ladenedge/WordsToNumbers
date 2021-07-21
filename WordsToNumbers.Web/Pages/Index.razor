@@ -6,24 +6,23 @@
     <ValidationSummary />
 
     <div class="form-row">
-        <div class="form-group">
+        <div class="form-group w-50">
             <label>Input words:</label>
             <InputText id="words" class="form-control" @bind-Value="Model.Words" />
         </div>
     </div>
 
     <div class="form-row">
-        <div class="form-group">
+        <div class="form-group w-50">
             <label>Output string:</label>
             <InputText id="numbers" class="form-control" readonly @bind-Value="Model.Numbers" />
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Translate</button>
+    <div class="form-row">
+        <button type="submit" class="btn btn-primary">Translate</button>
+    </div>
 </EditForm>
-
-
-
 
 @code {
     private WordsAndNumbers Model = new();
