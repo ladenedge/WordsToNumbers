@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WordsToNumbers</name>
+    </assembly>
+    <members>
+        <member name="M:WordsToNumbers.Extensions.GetRangeByIndices``1(System.Collections.Generic.List{``0},System.Int32,System.Int32)">
+            <summary>
+            Creates a shallow copy of a list by start and end indicies (exclusive).
+            </summary>
+            <typeparam name="T">List element type.</typeparam>
+            <param name="list">The list to copy.</param>
+            <param name="startIndex">The index of <paramref name="list"/> to start the copy.</param>
+            <param name="endIndex">The index of <paramref name="list"/> to stop copying (not included in resulting list).</param>
+            <returns>A new list from [startIndex, endIndex).</returns>
+        </member>
+        <member name="T:WordsToNumbers.IWordToNumberStrategy">
+            <summary>
+            Represents a strategy for converting words to numbers.
+            </summary>
+        </member>
+        <member name="M:WordsToNumbers.IWordToNumberStrategy.ConvertWordsToNumbers(System.String)">
+            <summary>
+            Convert numeric words to numbers.
+            </summary>
+            <param name="words">A sentence with numeric words.</param>
+            <returns>The input sentence with the numeric words replaced by numerals.</returns>
+        </member>
+        <member name="T:WordsToNumbers.SimpleReplacementStrategy">
+            <summary>
+            A simple strategy for converting words to numbers.
+            </summary>
+        </member>
+        <member name="M:WordsToNumbers.SimpleReplacementStrategy.ConvertWordsToNumbers(System.String)">
+            <summary>
+            Convert numeric words to numbers.
+            </summary>
+            <param name="words">A sentence with numeric words.</param>
+            <returns>The input sentence with the numeric words replaced by numerals.</returns>
+        </member>
+    </members>
+</doc>
