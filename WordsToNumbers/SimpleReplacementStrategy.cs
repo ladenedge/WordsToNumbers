@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace WordsToNumbers
@@ -8,6 +9,8 @@ namespace WordsToNumbers
     /// </summary>
     public class SimpleReplacementStrategy : IWordToNumberStrategy
     {
+        const int MaximumOrdinalNumber = 299;
+
         /// <summary>
         /// Convert numeric words to numbers.
         /// </summary>
@@ -19,7 +22,12 @@ namespace WordsToNumbers
                 return words;
 
             var resultWords = string.Empty;
-            var splitWords = words.ToLower().Trim().Split();
+            var normalWords = words.ToLower().Trim();
+
+            foreach (var replacer in PreReplacements)
+                normalWords = normalWords.Replace(replacer.Key, replacer.Value);
+
+            var splitWords = normalWords.Split();
             var currentNumberWords = new List<string>();
 
             foreach (var word in splitWords)
@@ -27,10 +35,13 @@ namespace WordsToNumbers
                 if (word == "and" && currentNumberWords.Any())
                     continue;
 
+                var isOrdinal = OrdinalNumbers.ContainsKey(word);
+
                 if (NumericalWords.Any(w => w == word))
                 {
                     currentNumberWords.Add(word);
-                    continue;
+                    if (!isOrdinal)  // stop if this is an ordinal (ie. final) word
+                        continue;
                 }
 
                 if (currentNumberWords.Any())
@@ -40,7 +51,8 @@ namespace WordsToNumbers
                     currentNumberWords.Clear();
                 }
             
-                resultWords += $"{word} ";
+                if (!isOrdinal)
+                    resultWords += $"{word} ";
             }
 
             if (currentNumberWords.Any())
@@ -53,19 +65,52 @@ namespace WordsToNumbers
             return resultWords;
         }
 
-        private static string ParseNumber(List<string> currentNumberWords)
+        private static string ParseNumber(List<string> currentNumberWords, bool allowOrdinals = true)
         {
             string numerals = string.Empty;
+            var ordinalNumber = 0;
             var actualNumber = 0;
 
-            foreach (var suffix in SuffixNumbers.OrderByDescending(n => n.Value))
+            var ordinal = currentNumberWords.SingleOrDefault(w => OrdinalNumbers.ContainsKey(w));
+            if (ordinal is not null && allowOrdinals)
+            {
+                var ordinalIndex = currentNumberWords.IndexOf(ordinal);
+                List<string> unusedWords = new();
+                
+                for (int startIndex = 0; startIndex <= ordinalIndex; startIndex++)
+                {
+                    var currentOrdinalWords = currentNumberWords.GetRangeByIndices(startIndex, ordinalIndex + 1);
+
+                    if (!currentOrdinalWords.Any(w => NonOrdinalNumbers.ContainsKey(w)))
+                    {
+                        var ordinalCandidate = ParseNumber(currentOrdinalWords, false);
+                        ordinalNumber = int.Parse(ordinalCandidate);
+                    }
+
+                    if (startIndex > 0)
+                        unusedWords = currentNumberWords.GetRangeByIndices(0, startIndex);
+                    if (ordinalNumber > 0 && ordinalNumber <= MaximumOrdinalNumber)
+                        break;
+                }
+
+                currentNumberWords = unusedWords;
+            }
+
+            foreach (var suffix in MultiplierNumbers.OrderByDescending(n => n.Value))
             {
                 var suffixIndex = currentNumberWords.IndexOf(suffix.Key);
-                if (suffixIndex < 1)
+                if (suffixIndex < 0)
                     continue;
-                var suffixWords = currentNumberWords.GetRangeByIndices(0, suffixIndex);
-                
-                var (number, _) = ComputeNumber(suffixWords);
+
+                // if the suffix word is first, we assume an implicit "one"
+                int number = 1;
+
+                if (suffixIndex >= 1)
+                {
+                    var suffixWords = currentNumberWords.GetRangeByIndices(0, suffixIndex);
+                    (number, _) = ComputeNumber(suffixWords);
+                }
+
                 actualNumber += number * suffix.Value;
                 currentNumberWords = currentNumberWords.GetRangeToEnd(suffixIndex + 1);
             }
@@ -77,13 +122,19 @@ namespace WordsToNumbers
                     actualNumber += number;
                 else
                     numerals += number.ToString();
+
+                if (currentNumberWords.Count <= unusedWords.Count)
+                    break;  // we're not consuming words as expected
+
                 currentNumberWords = unusedWords;
             }
 
             if (actualNumber > 0)
                 numerals = actualNumber.ToString();
+            if (ordinalNumber > 0)
+                numerals += " " + ordinalNumber.ToString();
 
-            return numerals;
+            return numerals.Trim();
         }
 
         private static (int, List<string>) ComputeNumber(List<string> numberWords)
@@ -101,7 +152,7 @@ namespace WordsToNumbers
                     if (hasNextWord)
                     {
                         var nextWord = numberWords[i + 1];
-                        if (DecimalNumbers.TryGetValue(nextWord, out int ones))
+                        if (DecimalNumbers.TryGetValue(nextWord, out int ones) || OrdinalNumbers.TryGetValue(nextWord, out ones))
                         {
                             number += ones;
                             return (number, numberWords.GetRangeToEnd(i + 2));
@@ -110,14 +161,22 @@ namespace WordsToNumbers
                     return (number, numberWords.GetRangeToEnd(i + 1));
                 }
 
-                if (DecimalNumbers.TryGetValue(word, out number))
-                    return (number, numberWords.GetRangeToEnd(i + 1));
-                if (SoloNumbers.TryGetValue(word, out number))
+                if (ComputeNumbers.TryGetValue(word, out number))
                     return (number, numberWords.GetRangeToEnd(i + 1));
             }
 
             return (number, numberWords);
         }
+
+        static readonly IReadOnlyDictionary<string, string> PreReplacements = new Dictionary<string, string>
+        {
+            ["a hundred"] = "hundred",
+            ["to hundred"] = "two hundred",
+            ["too hundred"] = "two hundred",
+            ["a thousand"] = "thousand",
+            ["to thousand"] = "two thousand",
+            ["too thousand"] = "two thousand",
+        };
 
         static readonly IReadOnlyDictionary<string, int> DecimalNumbers = new Dictionary<string, int>
         {
@@ -160,13 +219,59 @@ namespace WordsToNumbers
             ["ninety"] = 90,
         };
 
-        static readonly IReadOnlyDictionary<string, int> SuffixNumbers = new Dictionary<string, int>
+        static readonly IReadOnlyDictionary<string, int> MultiplierNumbers = new Dictionary<string, int>
         {
             ["hundred"] = 100,
+            ["hundredth"] = 100,
             ["thousand"] = 1000,
         };
 
-        static readonly IEnumerable<string> NumericalWords = 
-            DecimalNumbers.Concat(SoloNumbers).Concat(PrefixNumbers).Concat(SuffixNumbers).Select(kvp => kvp.Key);
+        static readonly IReadOnlyDictionary<string, int> OrdinalNumbers = new Dictionary<string, int>
+        {
+            ["first"] = 1,
+            ["second"] = 2,
+            ["third"] = 3,
+            ["fourth"] = 4,
+            ["fifth"] = 5,
+            ["sixth"] = 6,
+            ["seventh"] = 7,
+            ["eighth"] = 8,
+            ["ninth"] = 9,
+            ["tenth"] = 10,
+            ["eleventh"] = 11,
+            ["twelfth"] = 12,
+            ["thirteenth"] = 13,
+            ["fourteenth"] = 14,
+            ["fifteenth"] = 15,
+            ["sixteenth"] = 16,
+            ["seventeenth"] = 17,
+            ["eighteenth"] = 18,
+            ["nineteenth"] = 19,
+            ["twentieth"] = 20,
+            ["thirtieth"] = 30,
+            ["fortieth"] = 40,
+            ["fiftieth"] = 50,
+            ["sixtieth"] = 60,
+            ["seventieth"] = 70,
+            ["eightieth"] = 80,
+            ["ninetieth"] = 90,
+            ["hundredth"] = 100,
+        };
+
+        static readonly IReadOnlyDictionary<string, int> NonOrdinalNumbers = SoloNumbers
+           .Concat(DecimalNumbers).Where(d => d.Key != "one" && d.Key != "two")
+           .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        static readonly IReadOnlyDictionary<string, int> ComputeNumbers = DecimalNumbers
+            .Concat(SoloNumbers)
+            .Concat(OrdinalNumbers)
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        static readonly IEnumerable<string> NumericalWords = DecimalNumbers
+            .Concat(SoloNumbers)
+            .Concat(PrefixNumbers)
+            .Concat(MultiplierNumbers)
+            .Concat(OrdinalNumbers)
+            .Select(kvp => kvp.Key);
     }
 }
