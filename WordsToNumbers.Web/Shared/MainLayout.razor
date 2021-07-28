@@ -4,6 +4,7 @@
     <div class="main">
         <nav class="navbar navbar-light bg-light">
             <a class="navbar-brand" href="#">WordsToNumbers</a>
+            <span class="navbar-text">@Version</span>
             <a href="https://github.com/ladenedge/WordsToNumbers" class="ml-md-auto">Github Repository</a>
         </nav>
 
@@ -12,3 +13,7 @@
         </div>
     </div>
 </div>
+
+@code {
+    private string Version => "v" + Assembly.GetAssembly(typeof(IWordToNumberStrategy)).GetName().Version.ToString();
+}
